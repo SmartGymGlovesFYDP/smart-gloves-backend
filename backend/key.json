@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "smartgloves-e450e",
+  "private_key_id": "ac8b28fe0caaace294d6cdd9d9d75356f8e3604b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDMqKqp6jIlDSL6\nz61czUc7LohbDtB4zkHQBPDkGFpwyUk+meeQcXePx+XhgiCnJ5bYG5xsJwH5tK//\nyEGtqH52Cmla5Q0W4bsD+rryMwRpA/9W6uuph3viS1rdnGs9bplB7qX3giuZanCJ\n6zQTdgTkdabeRmYP+F1hYSSjl34d23JxAk0YPk+uYJ3/7SjiSq353a79sczmXB9s\nzZXz4GulMX5a+lVarTzCUYaNXIwKo1I5OWcvfEH/3hG8+47VCVIsCh3IXV5vG82e\nzHNH0XCrZWzvFZX1jmgkYMWTVGtsscOSalck451FQT14YR8JXEypIxMpYYondV6V\nOpdZBRgLAgMBAAECggEATbn5JxMU/FFi6ZKaKtajqOxhSQP1VQwwnoph2p8NKiyo\nLqhQ8+DEIc0vl1fOgu1cMrM50zF1ZJqlBSXPG98UOEx3+tdnAzuzxS0idv29PQ0R\nmrcZzYbxG962odfYOrqYZhv22GuNl3R/TUIQwxtdfE7akyx1crdG78bvHVpZwYh5\ntcquU6G/OcKWN/NRCIbVizXGVnVRCjxbNHIX8byG19vKff9QSKvta5UyfHvTAzBa\nvsgCvS/2mkpKJinain0w43mkjNXmdeko0DEkm24s34A2TsGaMeyuStwuoi+Iavol\nyYwbaManTMboCB1V2tLRC+6rD1y0WIr+zouEHOZXIQKBgQD+bvd6AUp17E1qsnPw\n0xDrgJlXKD83GC0z3XqGDdeqTwix+5oL1cGjXG3JtgI1J4gjfnEVKgZQcxvqjnLf\n5U34XDknxnuMjcKMUhaUe8jgDrFoiktiX/Vyz37QbVnrmS/xZTvVt/Jk+p5LAdad\n1yLAzS//v6qrQVUWmaHtf7JuEwKBgQDN6z8Cv5F5PxA3yA7WuK/Vay7kiJ7L3osF\nJC4NPylP9/Cd3WSf6l80XFaqFY4PEKfisHgJ44hge+bodScHI6eRgocCfR2LFBma\nO44ZasSeDEl8BZcoAg6JgXQ9Xh0dAA6ZA6FciJagZ55E8Lc+79t/0VaLa8YYi5Tc\nZ1ynDAuNKQKBgCQu07LeDCDJAhlyV1qgKX/UQfpLFvJW1dbSYGJABbOKmcn15epY\n87ivpE1TPO0iOhISITLJTyyRsh6hM2TzzyrKsrYdW+SZJFmgMuXa1K5IaKJdSGst\nClLRf09UvbzrhA3oP6IdDrOdkHVKRaMcvSx+AZ11PGguWlNkdcq4pj9RAoGBAMjU\nL28RwOJ8Y+fTYM1/8FV4JJLUv/LbR8Cq6ZMXz8XjbbO5UcM5RML/b7KQNS1yNBq9\nu0UBuWdIUArU/0xSNMKQh/YgaijTYKjwfoVBgSMXnq+rkCF/6AepzuFvIXvAK3yG\ncuCZgjZM+KoKDt399pixZPOzF8+mindvA4kUEUwJAoGAfYToZvOaqYi5JR/d8cnW\nWidS0Q5LoACspdc3/2Be2YyKYF/ip/79Hlq+rr38RI6tcQ+rwrfyYhFJfvUdd5KU\nNtPW1ZJKmimcVghvXFFEI6v6Yb6OiQcGeYMv8EI89RhuX9dxjlBuxtyAV6u7R04I\nMSYwFXhsXXOdQ2j+/AKbeRo=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-ov0lv@smartgloves-e450e.iam.gserviceaccount.com",
+  "client_id": "117121627327327762082",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-ov0lv%40smartgloves-e450e.iam.gserviceaccount.com"
+}
