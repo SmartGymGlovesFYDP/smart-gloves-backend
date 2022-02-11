@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app
 from enum import Enum
 
@@ -12,6 +12,9 @@ db = firestore.client()
 users_ref = db.collection('users')
 workouts_ref = db.collection('workouts')
 
+# Specific Document + Collection to extract the user's workout
+specificUser = 'XJGnJ3aJ3zUWcUAgtQOsie8oM9Y2'
+newWorkout_ref = users_ref.document(specificUser).collection('newWorkout')
 
 # Define Routes below
 
@@ -40,6 +43,15 @@ def intensity(heart_rate):
     except Exception as e:
         return f"An error occurred when determining intensity: {e}"
 
+@app.route("/detectWorkout", methods=['GET'])
+def detectWorkout():
+    try:
+        newWorkout = [doc.to_dict() for doc in newWorkout_ref.stream()]
+        # Ideally, we will only have 1 temporary workout that will be processed so grab the first one
+        workoutName = newWorkout[0]['workoutName']
+        return workoutName, 200
+    except Exception as e:
+        return f"An error occurred when determining intensity: {e}"
 
 # Define Middleware below
 class Intensity(Enum):
