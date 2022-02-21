@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify
-from firebase_admin import credentials, firestore, initialize_app
+from firebase_admin import credentials, firestore, initialize_app, db
 from enum import Enum
 
 app = Flask(__name__)
@@ -8,9 +8,11 @@ app = Flask(__name__)
 # Initialize Firestore DB
 cred = credentials.Certificate('key.json')
 default_app = initialize_app(cred)
-db = firestore.client()
-users_ref = db.collection('users')
-workouts_ref = db.collection('workouts')
+firestore_db = firestore.client()
+users_ref = firestore_db.collection('users')
+workouts_ref = firestore_db.collection('workouts')
+realtimedata_ref = db.reference(
+    '/', None, 'https://smartgloves-e450e-default-rtdb.firebaseio.com/')
 
 # Specific Document + Collection to extract the user's workout
 specificUser = 'XJGnJ3aJ3zUWcUAgtQOsie8oM9Y2'
@@ -43,6 +45,7 @@ def intensity(heart_rate):
     except Exception as e:
         return f"An error occurred when determining intensity: {e}"
 
+
 @app.route("/detectWorkout", methods=['GET'])
 def detectWorkout():
     try:
@@ -54,6 +57,8 @@ def detectWorkout():
         return f"An error occurred when determining intensity: {e}"
 
 # Define Middleware below
+
+
 class Intensity(Enum):
     LOW = 1
     MID = 2
@@ -101,6 +106,18 @@ def calcIntensityHeartRate(heartRate):
     else:
         userIntensityArray.append(Intensity.MAXED)
     return {"userIntensity": userIntensityArray}
+
+
+def getGloveData():
+    # one time call to get current instance of the realtime db
+    data = realtimedata_ref.get()
+    # stream to catch live data
+    dataStream = realtimedata_ref.listen(listenHandler)
+
+
+def listenHandler(event):
+    # example of value access: event.data['ax']
+    print("data", event.data)
 
 
 if __name__ == "__main__":
