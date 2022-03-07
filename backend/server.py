@@ -1,10 +1,8 @@
 from itertools import count
 import os
-from sqlite3 import Timestamp
 from flask import Flask, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app, db
 from enum import Enum
-from datetime import datetime, timedelta
 import time
 
 app = Flask(__name__)
