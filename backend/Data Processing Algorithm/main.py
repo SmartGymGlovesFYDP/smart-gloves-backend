@@ -7,6 +7,43 @@ from fastdtw import fastdtw
 from scipy.signal import butter,filtfilt
 from scipy.spatial.distance import euclidean
 
+# Import libraries and classes required for this example:
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler 
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+
+BENCH = "./Data/Bench/"
+CURLS = "./Data/Curls/"
+TRICEPS = "./Data/Triceps/"
+
+mapping = {
+    0: "Bench Press",
+    1: "Bicep Curls",
+    2: "Tricep Extension"
+}
+
+injury = { # Compare the Right + Left Glove
+    "Ax_Right >> Ax_Left" : "Right hand motion too fast (X-Direction)",
+    "Ay_Right >> Ay_Left" : "Right hand motion too fast (Y-Direction)",
+    "Az_Right >> Az_Left" : "Right hand motion too fast (Z-Direction)",
+    "Gx_Right >> Gx_Left" : "Possible injury risk of rotational motion (X-Direction)",
+    "Gy_Right >> Gy_Left" : "Possible injury risk of rotational motion (Y-Direction)",
+    "Gz_Right >> Gz_Left" : "Possible injury risk of rotational motion (Z-Direction)",
+    "Ax_Right << Ax_Left" : "Left hand motion too fast (X-Direction)",
+    "Ay_Right << Ay_Left" : "Left hand motion too fast (Y-Direction)",
+    "Az_Right << Az_Left" : "Left hand motion too fast (Z-Direction)",
+    "Gx_Right << Gx_Left" : "Possible injury risk of rotational motion (X-Direction)",
+    "Gy_Right << Gy_Left" : "Possible injury risk of rotational motion (Y-Direction)",
+    "Gz_Right << Gz_Left" : "Possible injury risk of rotational motion (Z-Direction)"
+    "Ax_Right ~ Ax_Left" : "Great speed for both hands (X-Direction)",
+    "Ay_Right ~ Ay_Left" : "Great speed for both hands (Y-Direction)",
+    "Az_Right ~ Az_Left" : "Great speed for both hands (Z-Direction)",
+    "Gx_Right ~ Gx_Left" : "Great stability of rotational motion for both hands (X-Direction)",
+    "Gy_Right ~ Gy_Left" : "Great stability of rotational motion for both hands (Y-Direction)",
+    "Gz_Right ~ Gz_Left" : "Great stability of rotational motion for both hands (Z-Direction)"
+}
+
 properAvgBenchPressMSE = [0.011716247,	0.036809727,	0.072262675,    # Ax_Right, Ay_Right, Az_Right
                         1366.580343,	132.7365875,	192.725278,     # Gx_Right, Gy_Right, Gz_Right
                         0.013828273,	0.036533363,	0.039886446,    # Ax_Left, Ay_Left, Az_Left
@@ -124,11 +161,11 @@ def plotData(xAxis, yAxis, zAxis, timeAxis, xLabel, yLabel, zLabel, filename):
     # print(f"MSE (Y-Axis) = {mse2}")
     # print(f"MSE (Z-Axis) = {mse3}")
 
-    plt.plot(timeAxis, m1*timeAxis + b1)
-    plt.plot(timeAxis, m2*timeAxis + b2)
-    plt.plot(timeAxis, m3*timeAxis + b3)
+    # plt.plot(timeAxis, m1*timeAxis + b1)
+    # plt.plot(timeAxis, m2*timeAxis + b2)
+    # plt.plot(timeAxis, m3*timeAxis + b3)
 
-    plt.legend()
+    # plt.legend()
     # plt.show()
     # plt.savefig(filename)
     # plt.clf()
@@ -187,55 +224,212 @@ def rateWorkout(allSlopes, workout):
 
     return diffInWorkout
 
+def predictWorkout(slopes_X_test):
+    # Import dataset:
+    url = "All.csv"
 
-######      THIS IS TO PREDICT THE WORKOUT
-# 1) Compare and add the absolute value of the differences in points of each workout
-# 2) Add the differences
-# 3) Return the workout with the lowest difference
-def predictWorkout(allSlopes):
-    # Variables to hold the workout difference value compared to the proper form
-    diffBP = 0.0
-    diffC = 0.0
-    diffT = 0.0
+    # Assign column names to dataset:
+    names = ['ax_Right','ay_Right','az_Right','gx_Right','gy_Right','gz_Right','ax_Left','ay_Left','az_Left','gx_Left','gy_Left','gz_Left','exercise']
+    
+    # Convert dataset to a pandas dataframe:
+    dataset = pd.read_csv(url, names=names) 
 
-    for i in range (len(allSlopes)):
-        diffBP += abs(allSlopes[i] - properAvgBenchPressMSE[i])
-        diffC += abs(allSlopes[i] - properAvgBicepCurlsMSE[i])
-        diffT += abs(allSlopes[i] - properAvgTricepsMSE[i])
+    # Use head() function to return the first 5 rows: 
+    dataset.head()
 
-    print (diffBP)
-    print (diffC)
-    print (diffT)
+    # Assign values to the X and y variables:
+    X_train = dataset.iloc[:, :-1].values
+    y_train = dataset.iloc[:, 12].values 
 
-    if diffBP < diffC and diffBP < diffT:
-        return "Bench Press"
-    elif diffC < diffBP and diffC < diffT:
-        return "Bicep Curls"
-    elif diffT < diffBP and diffT < diffC:
-        return "Triceps Extension"
-    else:
-        return "Failure to recognize workout"
+    # Serves as a predictor (0 = BP, 1 = BC, 2 = TE)
+    slopes_y_test = -1
+
+    # Standardize features by removing mean and scaling to unit variance:
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+
+    X_train = scaler.transform(X_train)
+    slopes_X_test = scaler.transform(slopes_X_test) 
+
+    # Use the KNN classifier to fit data:
+    classifier = KNeighborsClassifier(n_neighbors=5)
+    classifier.fit(X_train, y_train) 
+
+    # Predict y data with classifier: 
+    slopes_y_test = classifier.predict(slopes_X_test)
+    # print(mapping[int(slopes_y_test)])
+
+    return int(slopes_y_test)
         
 def main():
 
-    # To hold all the slopes for a certain exercise
-    allSlopes = []
+    # # To hold all the slopes for a certain exercise
+    # allSlopes = []
     
-    workoutData = []
-    workout = readJSON("workout6.json")
-    workoutData.append(workout)
+    # workoutData = []
+    # workout = readJSON("workout.json")
+    # workoutData.append(workout)
 
-    allSlopes = generateSlopes(workoutData, "Workout")
-    guessWorkout = predictWorkout(allSlopes[0])
+    # allSlopes = generateSlopes(workoutData, "Workout")
+    # Sample test slopes to see what it returns
+    # allSlopes = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
+    # print (allSlopes)
+    # 0 = Bench Press   = [[0.022603186,0.00243637,0.02918603,5.339126702,107.8320342,7.000924645,0.028759372,0.008630163,0.02132904,22.92064783,99.48017482,3.45258442]]
+    # 1 = Bicep Curls   = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
+    # 2 = Triceps       = [[0.161019347,0.106992285,0.047709297,442.3707667,724.1853624,1984.234125,0.033414772,0.076311812,0.028354947,221.5938891,245.4956944,1074.739071]]
+    # guessWorkout = predictWorkout(allSlopes)
+    # print(mapping[guessWorkout])
 
-    print (allSlopes)
-    print(guessWorkout)
-
-    workoutRating = rateWorkout(allSlopes[0], guessWorkout)
+    # workoutRating = rateWorkout(allSlopes[0], guessWorkout)
     # print(workoutRating)
 
     # myDf = pd.DataFrame(workoutData)
     # myDf.to_csv('output_workout.csv', index=False, header=False)
 
+    # To hold all the slopes for a certain exercise including the perfect model
+    allBenchPressSlopes = []
+    allCurlsSlopes = []
+    allTricepSlopes = []
+    
+    benchPressData = []
+    benchPressPerfect1 = readJSON(BENCH + "bench0.json")
+    benchPressPerfect2 = readJSON(BENCH + "bench1.json")
+    benchPressPerfect3 = readJSON(BENCH + "bench2.json")
+    benchPressData.append(benchPressPerfect1)
+    benchPressData.append(benchPressPerfect2)
+    benchPressData.append(benchPressPerfect3)
+
+    curlsData = []
+    curlsPerfect1 = readJSON(CURLS + "curls0.json")
+    curlsPerfect2 = readJSON(CURLS + "curls1.json")
+    curlsPerfect3 = readJSON(CURLS + "curls2.json")
+    curlsData.append(curlsPerfect1)
+    curlsData.append(curlsPerfect2)
+    curlsData.append(curlsPerfect3)
+
+    tricepsData = []
+    tricepsPerfect1 = readJSON(Triceps + "triceps0.json")
+    tricepsPerfect2 = readJSON(Triceps + "triceps1.json")
+    tricepsPerfect3 = readJSON(Triceps + "triceps2.json")
+    tricepsData.append(tricepsPerfect1)
+    tricepsData.append(tricepsPerfect2)
+    tricepsData.append(tricepsPerfect3)
+
+    allBenchPressSlopes = generateSlopes(benchPressData, "BenchPress")
+    allCurlsSlopes = generateSlopes(curlsData, "Curls")
+    allTricepSlopes = generateSlopes(tricepsData, "Triceps")
+
+    myDf1 = pd.DataFrame(allBenchPressSlopes)
+    myDf2 = pd.DataFrame(allCurlsSlopes)
+    myDf3 = pd.DataFrame(allTricepSlopes)
+
+    myDf1.to_csv('output_bench_press.csv', index=False, header=False)
+    myDf2.to_csv('output_curls.csv', index=False, header=False)
+    myDf3.to_csv('output_triceps.csv', index=False, header=False)
+
 if __name__ == '__main__':
     main()
+
+'''
+TO-DOs:
+
+Functional
+
+[SHAHIL]
+1) Display analyzed smart gym glove sensor data for at least 3 distinct gym activities with 2 or more metrics
+* [Back-End] 
+
+    - Bench Press
+        Ax_Right = 
+        Ay_Right = 
+        Az_Right = 
+        Gx_Right = 
+        Gy_Right = 
+        Gz_Right = 
+
+        Ax_Left = 
+        Ay_Left = 
+        Az_Left = 
+        Gx_Left = 
+        Gy_Left = 
+        Gz_Left = 
+
+    - Bicep Curl
+        Ax_Right = 
+        Ay_Right = 
+        Az_Right = 
+        Gx_Right = 
+        Gy_Right = 
+        Gz_Right = 
+
+        Ax_Left = 
+        Ay_Left = 
+        Az_Left = 
+        Gx_Left = 
+        Gy_Left = 
+        Gz_Left = 
+
+    - Tricep Overhead Extension
+        Ax_Right = 
+        Ay_Right = 
+        Az_Right = 
+        Gx_Right = 
+        Gy_Right = 
+        Gz_Right = 
+
+        Ax_Left = 
+        Ay_Left = 
+        Az_Left = 
+        Gx_Left = 
+        Gy_Left = 
+        Gz_Left = 
+
+* [Front-End] Being able to extract workout history from the backend and show the results in the frontend.
+* [Test] Are we able to view the results in the mobile app?
+
+2) The app must have a library of 20 distinct exercises with the ability for the user to add at least 50 custom exercises.
+* [Front-End] Add a form to the front-end to add a new exercise to the library
+* [Test] Are we able to add a new exercise and does it show up in the backend?
+
+3) A user can view workout analysis and results for day, week, month, and year with scores based on 2 or more key metrics.
+* [Back-End] Nothing really, the two metrics will be generated from the available workout history from firestore.
+* [Front-End] Will have to filter and provide the score on Arms/Chest/Legs for day/week/month/year. 
+* [Test] Are we able to view this analysis in the mobile app?
+
+4) The app must have 5 methods to gamify workouts and compete with friends. This includes workout streaks, badges, trophies, leaderboards, and scores.
+* [Back-End] Will have to create a friends list collection and connect their workout history performance.
+* [Front-End] Being able to view the performances/metrics of friends on the app.
+* [Test] Are the results shown on the mobile app?
+
+5) A user can sign into any mobile phone with the Smart Gym app and load the home screen within 10 seconds.
+* [Test] Compute the timing from signing into the mobile app?
+
+[SHAHIL]
+6) Automatically recognize 3 distinct gym activities using smart gym glove data with 95% accuracy.
+* [Back-End] Using
+        Input = Raw Data
+        Process = Raw Data -> Convert to Slopes (12 slopes) -> Use that to train KNN Model -> Test the Raw Data Slopes with Model -> Return Exercise
+        Output = Classify the workout and place it properly in the workoutHistory
+* [Test] Test 10 workouts, it should yield 10/10 to achieve over 95% accuracy
+
+7) The backend server must convert sensor data into readable metrics within 30 seconds of a user completing an activity.
+* [Test] Compute the timing from finishing workout to viewing the results in the mobile app?
+
+
+Non-Functional
+
+1) The mobile app must be supported for Android 5.0+ and iOS 13+ compatible devices.
+* [Test] Refer to the EXPO guidelines? What versions can we export the Expo Project to in Android and Apple?
+
+2) Incorporate 5 mobile native health and fitness metrics to improve ML based injury risk assessment.
+* [Back-End] N/A
+* [Front-End] N/A
+* [Test] N/A
+
+3) The backend server must have an uptime of 95%.
+* [Test] Are we able to compute the results from workout and view it in mobile app? If yes, then we know backend is up.
+
+4) The delay from API calls between the database and the mobile application must be within 750 milliseconds.
+* [Test] Compute the timing of the calls from database and mobile app?
+
+'''
