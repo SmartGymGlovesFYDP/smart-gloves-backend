@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app, db
 from enum import Enum
+import datetime
 
 app = Flask(__name__)
 
@@ -17,6 +18,8 @@ realtimedata_ref = db.reference(
 # Specific Document + Collection to extract the user's workout
 specificUser = 'XJGnJ3aJ3zUWcUAgtQOsie8oM9Y2'
 newWorkout_ref = users_ref.document(specificUser).collection('newWorkout')
+workoutHistory_ref = users_ref.document(
+    specificUser).collection('workoutHistory')
 
 # Define Routes below
 
@@ -36,11 +39,14 @@ def exerciseData():
 def intensity(heart_rate):
     try:
         if request.method == 'GET':
-            return showIntensity()
+            dt = datetime.datetime(2022, 2, 24, 8, 00, 00)
+            workouts = workoutHistory_ref.where('timestamp', ">=", dt).stream()
+            return workouts[0]['intensity']
         else:  # POST
             if(heart_rate > -1):
                 return calcIntensityHeartRate(heart_rate)
             else:
+                # TODO: update this to use the post request values as parameters
                 return calcIntensity()
     except Exception as e:
         return f"An error occurred when determining intensity: {e}"
@@ -52,39 +58,58 @@ def detectWorkout():
         newWorkout = [doc.to_dict() for doc in newWorkout_ref.stream()]
         # Ideally, we will only have 1 temporary workout that will be processed so grab the first one
         workoutName = newWorkout[0]['workoutName']
-        return workoutName, 200
+        workoutMajorMuscle = newWorkout[0]['majorMuscle']
+        workoutDifficulty = newWorkout[0]['difficulty']
+        workoutMinutes = newWorkout[0]['minutes']
+        return workoutName, workoutMajorMuscle, workoutDifficulty, workoutMinutes, 200
     except Exception as e:
-        return f"An error occurred when determining intensity: {e}"
+        return f"An error occurred when determining temp workout: {e}"
+
+
+@app.route("/updateWorkout", methods=['GET'])
+def updateWorkout():
+    try:
+        tempWorkoutInfo = detectWorkout()
+        if tempWorkoutInfo[0] != "A":
+            # update the workout history
+            workoutHistory_ref.add({
+                "workoutName": tempWorkoutInfo[0],
+                "duration": tempWorkoutInfo[3],
+                "intensity": calcIntensity(tempWorkoutInfo[2], tempWorkoutInfo[3]),
+                "performance": calcPerformance(tempWorkoutInfo[3]),
+                "majorMuscle": tempWorkoutInfo[1],
+                "timestamp": datetime.datetime.now()
+            })
+            # clear the documents in the newWorkout_ref so only a single document exists at a time
+            for doc in newWorkout_ref.stream():
+                doc.reference.delete()
+            return "done", 200
+        else:
+            return "no changes made", 200
+    except Exception as e:
+        return f"An error occurred when updateing workout summary: {e}"
+
 
 # Define Middleware below
 
 
 class Intensity(Enum):
-    LOW = 1
-    MID = 2
-    HIGH = 3
-    MAXED = 4
+    LOW = 0.1
+    MID = 0.2
+    HIGH = 0.3
+    MAXED = 0.4
 
 
-def showIntensity():
-    # return should be a read from firebase user data on past workout information
-    # remember the most recent past is the current workout
-    return Intensity.LOW.value
-
-
-def calcIntensity():  # TODO: after moving some mock user data into firebase we can finish this
-    # default
-    # step 1) make calculation
-    # step 2) save to firebase
-    # step 3) return calc
+def calcIntensity(workoutDifficulty, workoutMinutes):
     try:
-        user_id = request.args.get('id')
-        if user_id:
-            user_Session_Data = users_ref.document(user_id).get()
-            # TODO: search for the given data about the session
-            # TODO: factors to account for intensity
-            # 1) variation difficulty, majorMuscle in order of highest intensity ('Full Body', 'Legs', 'Arms','Core'), number of majorMuscle groups targeted, number of minorMuscle groups targeted
-        return Intensity.MAXED.value
+        intensity = workoutDifficulty / 5
+        if workoutMinutes <= 10:
+            intensity += Intensity.LOW
+        elif workoutMinutes <= 45:
+            intensity += Intensity.MID
+        else:
+            intensity += Intensity.HIGH
+        return intensity
     except Exception as e:
         return f"An error occurred while calculating intensity: {e}"
 
@@ -118,6 +143,14 @@ def getGloveData():
 def listenHandler(event):
     # example of value access: event.data['ax']
     print("data", event.data)
+
+
+def calcPerformance(workoutMinutes):
+    # TODO: implimented soon, should be a percentage
+    if workoutMinutes <= 45:
+        return 0.96
+    else:
+        return 0.72
 
 
 if __name__ == "__main__":
