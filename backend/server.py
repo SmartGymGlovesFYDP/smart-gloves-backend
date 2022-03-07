@@ -1,7 +1,11 @@
+from itertools import count
 import os
+from sqlite3 import Timestamp
 from flask import Flask, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app, db
 from enum import Enum
+from datetime import datetime, timedelta
+import time
 
 app = Flask(__name__)
 
@@ -109,15 +113,34 @@ def calcIntensityHeartRate(heartRate):
 
 
 def getGloveData():
-    # one time call to get current instance of the realtime db
-    data = realtimedata_ref.get()
+    # Polling RealTime database
+    # loop picks a value in RT db waits if the newest value is not changed then exit, else continue the loop
+    while True:
+        prevTime = getLatestTimestamp()
+        time.sleep(0.5)
+        latestTime = getLatestTimestamp()
+        if latestTime <= prevTime:
+            break
+
     # stream to catch live data
-    dataStream = realtimedata_ref.listen(listenHandler)
+    # dataStream = realtimedata_ref.listen(listenHandler)
+
+    data = realtimedata_ref.get()
+    return data
 
 
-def listenHandler(event):
-    # example of value access: event.data['ax']
-    print("data", event.data)
+def getLatestTimestamp():
+    curr_data = realtimedata_ref.get()
+    last_timestamp = 0
+    for key, val in curr_data.items():
+        last_timestamp = key
+    #print("last_timestamp: ", last_timestamp)
+    return last_timestamp
+
+
+# def listenHandler(event):
+#     example of value access: event.data['ax']
+#     print("data", event.data)
 
 
 if __name__ == "__main__":
