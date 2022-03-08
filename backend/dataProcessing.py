@@ -6,6 +6,7 @@ import pandas as pd
 from fastdtw import fastdtw
 from scipy.signal import butter,filtfilt
 from scipy.spatial.distance import euclidean
+from server import getGloveData
 
 # Import libraries and classes required for this example:
 from sklearn.model_selection import train_test_split
@@ -13,9 +14,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 
-BENCH = "./Data/Bench/"
-CURLS = "./Data/Curls/"
-TRICEPS = "./Data/Triceps/"
+BENCH = "./Data_Processing_Algorithm/Data/Bench/"
+CURLS = "./Data_Processing_Algorithm/Data/Curls/"
+TRICEPS = "./Data_Processing_Algorithm/Data/Triceps/"
 
 mapping = {
     0: "Bench Press",
@@ -35,7 +36,7 @@ injury = { # Compare the Right + Left Glove
     "Az_Right << Az_Left" : "Left hand motion too fast (Z-Direction)",
     "Gx_Right << Gx_Left" : "Possible injury risk of rotational motion (X-Direction)",
     "Gy_Right << Gy_Left" : "Possible injury risk of rotational motion (Y-Direction)",
-    "Gz_Right << Gz_Left" : "Possible injury risk of rotational motion (Z-Direction)"
+    "Gz_Right << Gz_Left" : "Possible injury risk of rotational motion (Z-Direction)",
     "Ax_Right ~ Ax_Left" : "Great speed for both hands (X-Direction)",
     "Ay_Right ~ Ay_Left" : "Great speed for both hands (Y-Direction)",
     "Az_Right ~ Az_Left" : "Great speed for both hands (Z-Direction)",
@@ -141,10 +142,10 @@ def calculateMSE(xDataAxis, yDataAxis, m, b):
     return MSE
 
 def plotData(xAxis, yAxis, zAxis, timeAxis, xLabel, yLabel, zLabel, filename):
-    plt.minorticks_off()
-    plt.scatter(timeAxis, xAxis, label=xLabel)
-    plt.scatter(timeAxis, yAxis, label=yLabel)
-    plt.scatter(timeAxis, zAxis, label=zLabel)
+    # plt.minorticks_off()
+    # plt.scatter(timeAxis, xAxis, label=xLabel)
+    # plt.scatter(timeAxis, yAxis, label=yLabel)
+    # plt.scatter(timeAxis, zAxis, label=zLabel)
 
     m1, b1 = np.polyfit(timeAxis, xAxis, 1)
     m2, b2 = np.polyfit(timeAxis, yAxis, 1)
@@ -265,20 +266,21 @@ def main():
 
     # # To hold all the slopes for a certain exercise
     # allSlopes = []
-    
-    # workoutData = []
-    # workout = readJSON("workout.json")
-    # workoutData.append(workout)
 
-    # allSlopes = generateSlopes(workoutData, "Workout")
+    workoutData = []
+    workout = getGloveData() # (UN)COMMENT THIS TO TEST FIREBASE REALTIMEDB
+    # workout = readJSON("workout.json") # (UN)COMMENT THIS TO TEST LOCAL JSON FILES
+    workoutData.append(workout)
+
+    allSlopes = generateSlopes(workoutData, "Workout")
     # Sample test slopes to see what it returns
     # allSlopes = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
     # print (allSlopes)
     # 0 = Bench Press   = [[0.022603186,0.00243637,0.02918603,5.339126702,107.8320342,7.000924645,0.028759372,0.008630163,0.02132904,22.92064783,99.48017482,3.45258442]]
     # 1 = Bicep Curls   = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
     # 2 = Triceps       = [[0.161019347,0.106992285,0.047709297,442.3707667,724.1853624,1984.234125,0.033414772,0.076311812,0.028354947,221.5938891,245.4956944,1074.739071]]
-    # guessWorkout = predictWorkout(allSlopes)
-    # print(mapping[guessWorkout])
+    guessWorkout = predictWorkout(allSlopes)
+    print(mapping[guessWorkout])
 
     # workoutRating = rateWorkout(allSlopes[0], guessWorkout)
     # print(workoutRating)
@@ -286,46 +288,46 @@ def main():
     # myDf = pd.DataFrame(workoutData)
     # myDf.to_csv('output_workout.csv', index=False, header=False)
 
-    # To hold all the slopes for a certain exercise including the perfect model
-    allBenchPressSlopes = []
-    allCurlsSlopes = []
-    allTricepSlopes = []
+    # # To hold all the slopes for a certain exercise including the perfect model
+    # allBenchPressSlopes = []
+    # allCurlsSlopes = []
+    # allTricepSlopes = []
     
-    benchPressData = []
-    benchPressPerfect1 = readJSON(BENCH + "bench0.json")
-    benchPressPerfect2 = readJSON(BENCH + "bench1.json")
-    benchPressPerfect3 = readJSON(BENCH + "bench2.json")
-    benchPressData.append(benchPressPerfect1)
-    benchPressData.append(benchPressPerfect2)
-    benchPressData.append(benchPressPerfect3)
+    # benchPressData = []
+    # benchPressPerfect1 = readJSON(BENCH + "bench0.json")
+    # benchPressPerfect2 = readJSON(BENCH + "bench1.json")
+    # benchPressPerfect3 = readJSON(BENCH + "bench2.json")
+    # benchPressData.append(benchPressPerfect1)
+    # benchPressData.append(benchPressPerfect2)
+    # benchPressData.append(benchPressPerfect3)
 
-    curlsData = []
-    curlsPerfect1 = readJSON(CURLS + "curls0.json")
-    curlsPerfect2 = readJSON(CURLS + "curls1.json")
-    curlsPerfect3 = readJSON(CURLS + "curls2.json")
-    curlsData.append(curlsPerfect1)
-    curlsData.append(curlsPerfect2)
-    curlsData.append(curlsPerfect3)
+    # curlsData = []
+    # curlsPerfect1 = readJSON(CURLS + "curls0.json")
+    # curlsPerfect2 = readJSON(CURLS + "curls1.json")
+    # curlsPerfect3 = readJSON(CURLS + "curls2.json")
+    # curlsData.append(curlsPerfect1)
+    # curlsData.append(curlsPerfect2)
+    # curlsData.append(curlsPerfect3)
 
-    tricepsData = []
-    tricepsPerfect1 = readJSON(Triceps + "triceps0.json")
-    tricepsPerfect2 = readJSON(Triceps + "triceps1.json")
-    tricepsPerfect3 = readJSON(Triceps + "triceps2.json")
-    tricepsData.append(tricepsPerfect1)
-    tricepsData.append(tricepsPerfect2)
-    tricepsData.append(tricepsPerfect3)
+    # tricepsData = []
+    # tricepsPerfect1 = readJSON(Triceps + "triceps0.json")
+    # tricepsPerfect2 = readJSON(Triceps + "triceps1.json")
+    # tricepsPerfect3 = readJSON(Triceps + "triceps2.json")
+    # tricepsData.append(tricepsPerfect1)
+    # tricepsData.append(tricepsPerfect2)
+    # tricepsData.append(tricepsPerfect3)
 
-    allBenchPressSlopes = generateSlopes(benchPressData, "BenchPress")
-    allCurlsSlopes = generateSlopes(curlsData, "Curls")
-    allTricepSlopes = generateSlopes(tricepsData, "Triceps")
+    # allBenchPressSlopes = generateSlopes(benchPressData, "BenchPress")
+    # allCurlsSlopes = generateSlopes(curlsData, "Curls")
+    # allTricepSlopes = generateSlopes(tricepsData, "Triceps")
 
-    myDf1 = pd.DataFrame(allBenchPressSlopes)
-    myDf2 = pd.DataFrame(allCurlsSlopes)
-    myDf3 = pd.DataFrame(allTricepSlopes)
+    # myDf1 = pd.DataFrame(allBenchPressSlopes)
+    # myDf2 = pd.DataFrame(allCurlsSlopes)
+    # myDf3 = pd.DataFrame(allTricepSlopes)
 
-    myDf1.to_csv('output_bench_press.csv', index=False, header=False)
-    myDf2.to_csv('output_curls.csv', index=False, header=False)
-    myDf3.to_csv('output_triceps.csv', index=False, header=False)
+    # myDf1.to_csv('output_bench_press.csv', index=False, header=False)
+    # myDf2.to_csv('output_curls.csv', index=False, header=False)
+    # myDf3.to_csv('output_triceps.csv', index=False, header=False)
 
 if __name__ == '__main__':
     main()

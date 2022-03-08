@@ -97,6 +97,13 @@ def predictWorkout(allSlopes):
 ## EXAMPLE TO TRAIN THE PERFECT MODEL
 def main():
 
+    # # To hold all the slopes for a certain exercise
+    # allSlopes = []
+    
+    workoutData = []
+    # workout = readJSON("workout.json")
+    # workoutData.append(workout)
+
     # To hold all the slopes for a certain exercise including the perfect model
     allBenchPressSlopes = []
     allCurlsSlopes = []
