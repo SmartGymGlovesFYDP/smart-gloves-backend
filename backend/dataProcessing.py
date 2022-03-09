@@ -17,6 +17,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 BENCH = "./Data_Processing_Algorithm/Data/Bench/"
 CURLS = "./Data_Processing_Algorithm/Data/Curls/"
 TRICEPS = "./Data_Processing_Algorithm/Data/Triceps/"
+TESTML = "./TestML/"
 
 mapping = {
     0: "Bench Press",
@@ -42,7 +43,7 @@ injury = { # Compare the Raw Data Slopes to the Error Bar of LOW-HIGH values
     14: "great rotational motion stability in the Z-Direction"              # Gz_Raw ~ Gz_Proper
 }
 
-properAvgBenchPressMSE = [(0.000954270, 0.004019794), # (Ax_Right_LOW,Ax_Right_HIGH)
+properAvgBenchPress =    [(0.000954270, 0.004019794), # (Ax_Right_LOW,Ax_Right_HIGH)
                           (0.019308498, 0.029403562), # (Ay_Right_LOW,Ay_Right_HIGH)
                           (0.014885754, 0.036409837), # (Az_Right_LOW,Az_Right_HIGH)
                           (99.38704950, 330.4275585), # (Gx_Right_LOW,Gx_Right_HIGH)
@@ -55,31 +56,31 @@ properAvgBenchPressMSE = [(0.000954270, 0.004019794), # (Ax_Right_LOW,Ax_Right_H
                           (11.44071676, 37.58922647), # (Gy_Left_LOW,Gy_Left_HIGH)
                           (10.40063429, 25.69945336)] # (Gz_Left_LOW,Gz_Left_HIGH)
 
-# properAvgBicepCurlsMSE = [(,), # (Ax_Right_LOW,Ax_Right_HIGH)
-#                           (,), # (Ay_Right_LOW,Ay_Right_HIGH)
-#                           (,), # (Az_Right_LOW,Az_Right_HIGH)
-#                           (,), # (Gx_Right_LOW,Gx_Right_HIGH)
-#                           (,), # (Gy_Right_LOW,Gy_Right_HIGH)
-#                           (,), # (Gz_Right_LOW,Gz_Right_HIGH)
-#                           (,), # (Ax_Left_LOW,Ax_Left_HIGH)
-#                           (,), # (Ay_Left_LOW,Ay_Left_HIGH)
-#                           (,), # (Az_Left_LOW,Az_Left_HIGH)
-#                           (,), # (Gx_Left_LOW,Gx_Left_HIGH)
-#                           (,), # (Gy_Left_LOW,Gy_Left_HIGH)
-#                           (,)] # (Gz_Left_LOW,Gz_Left_HIGH)
+properAvgBicepCurls =    [(0.073003751, 0.156914016), # (Ax_Right_LOW,Ax_Right_HIGH)
+                          (0.113470746, 0.378368239), # (Ay_Right_LOW,Ay_Right_HIGH)
+                          (0.204006200, 0.338959347), # (Az_Right_LOW,Az_Right_HIGH)
+                          (1490.716510, 2796.339401), # (Gx_Right_LOW,Gx_Right_HIGH)
+                          (4231.833769, 5192.279753), # (Gy_Right_LOW,Gy_Right_HIGH)
+                          (1483.068245, 2388.213538), # (Gz_Right_LOW,Gz_Right_HIGH)
+                          (0.055049585, 0.095754317), # (Ax_Left_LOW,Ax_Left_HIGH)
+                          (0.154317325, 0.364256575), # (Ay_Left_LOW,Ay_Left_HIGH)
+                          (0.168226103, 0.290224076), # (Az_Left_LOW,Az_Left_HIGH)
+                          (959.2773030, 3405.309227), # (Gx_Left_LOW,Gx_Left_HIGH)
+                          (2821.313807, 4507.885355), # (Gy_Left_LOW,Gy_Left_HIGH)
+                          (1062.203702, 2892.248853)] # (Gz_Left_LOW,Gz_Left_HIGH)
 
-# properAvgTricepsMSE =    [(,), # (Ax_Right_LOW,Ax_Right_HIGH)
-#                           (,), # (Ay_Right_LOW,Ay_Right_HIGH)
-#                           (,), # (Az_Right_LOW,Az_Right_HIGH)
-#                           (,), # (Gx_Right_LOW,Gx_Right_HIGH)
-#                           (,), # (Gy_Right_LOW,Gy_Right_HIGH)
-#                           (,), # (Gz_Right_LOW,Gz_Right_HIGH)
-#                           (,), # (Ax_Left_LOW,Ax_Left_HIGH)
-#                           (,), # (Ay_Left_LOW,Ay_Left_HIGH)
-#                           (,), # (Az_Left_LOW,Az_Left_HIGH)
-#                           (,), # (Gx_Left_LOW,Gx_Left_HIGH)
-#                           (,), # (Gy_Left_LOW,Gy_Left_HIGH)
-#                           (,)] # (Gz_Left_LOW,Gz_Left_HIGH)
+properAvgTriceps =       [(0.003766914, 0.057215426), # (Ax_Right_LOW,Ax_Right_HIGH)
+                          (0.024402355, 0.203202160), # (Ay_Right_LOW,Ay_Right_HIGH)
+                          (0.002333381, 0.013026269), # (Az_Right_LOW,Az_Right_HIGH)
+                          (99.41960390, 330.3155266), # (Gx_Right_LOW,Gx_Right_HIGH)
+                          (42.81418196, 123.1278526), # (Gy_Right_LOW,Gy_Right_HIGH)
+                          (212.4638896, 1320.382979), # (Gz_Right_LOW,Gz_Right_HIGH)
+                          (0.001674259, 0.034351184), # (Ax_Left_LOW,Ax_Left_HIGH)
+                          (0.027319996, 0.219775514), # (Ay_Left_LOW,Ay_Left_HIGH)
+                          (0.001772729, 0.020093009), # (Az_Left_LOW,Az_Left_HIGH)
+                          (80.52329157, 314.9831677), # (Gx_Left_LOW,Gx_Left_HIGH)
+                          (42.54601338, 87.95397931), # (Gy_Left_LOW,Gy_Left_HIGH)
+                          (372.0777554, 1260.801085)] # (Gz_Left_LOW,Gz_Left_HIGH)
 
 def readJSON(filename):
     f = open(filename)
@@ -369,11 +370,11 @@ def evaluateForm(raw, proper):
 # [DONE] 3.3) Find the differences in each direction and give a rating and injury risk in each direction
 def rateWorkout(allSlopes, workout):
     if workout == "Bench Press":
-        ratings, tips = evaluateForm(allSlopes, properAvgBenchPressMSE)
+        ratings, tips = evaluateForm(allSlopes, properAvgBenchPress)
     elif workout == "Bicep Curls":
-        ratings, tips = evaluateForm(allSlopes, properAvgBicepCurlsMSE)
+        ratings, tips = evaluateForm(allSlopes, properAvgBicepCurls)
     elif workout == "Triceps Extension":
-        ratings, tips = evaluateForm(allSlopes, properAvgTricepsMSE)
+        ratings, tips = evaluateForm(allSlopes, properAvgTriceps)
     else:
         return "Invalid Input!"
     return ratings, tips
@@ -415,74 +416,86 @@ def predictWorkout(slopes_X_test):
 
     return int(slopes_y_test)
 
-#TODO:TEST PROPER        
+def testML():
+    # To hold all the slopes for a certain exercise including the perfect model
+    allBenchPressSlopes = []
+    allCurlsSlopes = []
+    allTricepSlopes = []
+    
+    benchPressData = []
+    benchPress1 = readJSON(TESTML + "bench0.json")
+    benchPress2 = readJSON(TESTML + "bench1.json")
+    benchPress3 = readJSON(TESTML + "bench2.json")
+    benchPressData.append(benchPress1)
+    benchPressData.append(benchPress2)
+    benchPressData.append(benchPress3)
+
+    curlsData = []
+    curls1 = readJSON(TESTML + "curls0.json")
+    curls2 = readJSON(TESTML + "curls1.json")
+    curls3 = readJSON(TESTML + "curls2.json")
+    curls4 = readJSON(TESTML + "curls3.json")
+    curlsData.append(curls1)
+    curlsData.append(curls2)
+    curlsData.append(curls3)
+    curlsData.append(curls4)
+
+    tricepsData = []
+    triceps1 = readJSON(TESTML + "triceps0.json")
+    triceps2 = readJSON(TESTML + "triceps1.json")
+    triceps3 = readJSON(TESTML + "triceps2.json")
+    tricepsData.append(triceps1)
+    tricepsData.append(triceps2)
+    tricepsData.append(triceps3)
+
+    allBenchPressSlopes = generateSlopes(benchPressData, "BenchPress")
+    allCurlsSlopes = generateSlopes(curlsData, "Curls")
+    allTricepSlopes = generateSlopes(tricepsData, "Triceps")
+
+    print("TEST 1: Bench Press: ", "Bench Press" == mapping[predictWorkout([allBenchPressSlopes[0]])] )
+    print("TEST 2: Bench Press: ", "Bench Press" == mapping[predictWorkout([allBenchPressSlopes[1]])] )
+    print("TEST 3: Bench Press: ", "Bench Press" == mapping[predictWorkout([allBenchPressSlopes[2]])] )
+    print("TEST 4: Bicep Curls: ", "Bicep Curls" == mapping[predictWorkout([allCurlsSlopes[0]])] )
+    print("TEST 5: Bicep Curls: ", "Bicep Curls" == mapping[predictWorkout([allCurlsSlopes[1]])] )
+    print("TEST 6: Bicep Curls: ", "Bicep Curls" == mapping[predictWorkout([allCurlsSlopes[2]])] )
+    print("TEST 7: Bicep Curls: ", "Bicep Curls" == mapping[predictWorkout([allCurlsSlopes[3]])] ) 
+    print("TEST 8: Tricep Extension: ", "Tricep Extension" == mapping[predictWorkout([allTricepSlopes[0]])] ) 
+    print("TEST 9: Tricep Extension: ", "Tricep Extension" == mapping[predictWorkout([allTricepSlopes[1]])] ) 
+    print("TEST 10: Tricep Extension: ", "Tricep Extension" == mapping[predictWorkout([allTricepSlopes[2]])] ) 
+     
 def main():
+    
+    # testML()
+
     # # To hold all the slopes for a certain exercise
     # allSlopes = []
 
-    workoutData = []
+    # workoutData = []
     # workout = getGloveData() # (UN)COMMENT THIS TO TEST FIREBASE REALTIMEDB
-    workout = readJSON("workout1.json") # (UN)COMMENT THIS TO TEST LOCAL JSON FILES
-    workoutData.append(workout)
+    # workout = readJSON("workout1.json") # (UN)COMMENT THIS TO TEST LOCAL JSON FILES
+    # workoutData.append(workout)
 
-    allSlopes = generateSlopes(workoutData, "Workout")
+    # allSlopes = generateSlopes(workoutData, "Workout")
     # Sample test slopes to see what it returns
     # allSlopes = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
     # print (allSlopes)
     # 0 = Bench Press   = [[0.022603186,0.00243637,0.02918603,5.339126702,107.8320342,7.000924645,0.028759372,0.008630163,0.02132904,22.92064783,99.48017482,3.45258442]]
     # 1 = Bicep Curls   = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
     # 2 = Triceps       = [[0.161019347,0.106992285,0.047709297,442.3707667,724.1853624,1984.234125,0.033414772,0.076311812,0.028354947,221.5938891,245.4956944,1074.739071]]
-    guessWorkout = predictWorkout(allSlopes)
-    predictedWorkout = mapping[guessWorkout]
-    print(predictedWorkout)
+    # guessWorkout = predictWorkout(allSlopes)
+    # predictedWorkout = mapping[guessWorkout]
+    # print(predictedWorkout)
 
-    workoutRating, tips = rateWorkout(allSlopes[0], predictedWorkout)
-    print(workoutRating)
-    print(tips)
+    # workoutRating, tips = rateWorkout(allSlopes[0], predictedWorkout)
+    # print(workoutRating)
+    # print(tips)
 
     # myDf = pd.DataFrame(workoutData)
     # myDf.to_csv('output_workout.csv', index=False, header=False)
 
-    # # To hold all the slopes for a certain exercise including the perfect model
-    # allBenchPressSlopes = []
-    # allCurlsSlopes = []
-    # allTricepSlopes = []
-    
-    # benchPressData = []
-    # benchPressPerfect1 = readJSON(BENCH + "bench0.json")
-    # benchPressPerfect2 = readJSON(BENCH + "bench1.json")
-    # benchPressPerfect3 = readJSON(BENCH + "bench2.json")
-    # benchPressData.append(benchPressPerfect1)
-    # benchPressData.append(benchPressPerfect2)
-    # benchPressData.append(benchPressPerfect3)
 
-    # curlsData = []
-    # curlsPerfect1 = readJSON(CURLS + "curls0.json")
-    # curlsPerfect2 = readJSON(CURLS + "curls1.json")
-    # curlsPerfect3 = readJSON(CURLS + "curls2.json")
-    # curlsData.append(curlsPerfect1)
-    # curlsData.append(curlsPerfect2)
-    # curlsData.append(curlsPerfect3)
 
-    # tricepsData = []
-    # tricepsPerfect1 = readJSON(Triceps + "triceps0.json")
-    # tricepsPerfect2 = readJSON(Triceps + "triceps1.json")
-    # tricepsPerfect3 = readJSON(Triceps + "triceps2.json")
-    # tricepsData.append(tricepsPerfect1)
-    # tricepsData.append(tricepsPerfect2)
-    # tricepsData.append(tricepsPerfect3)
 
-    # allBenchPressSlopes = generateSlopes(benchPressData, "BenchPress")
-    # allCurlsSlopes = generateSlopes(curlsData, "Curls")
-    # allTricepSlopes = generateSlopes(tricepsData, "Triceps")
-
-    # myDf1 = pd.DataFrame(allBenchPressSlopes)
-    # myDf2 = pd.DataFrame(allCurlsSlopes)
-    # myDf3 = pd.DataFrame(allTricepSlopes)
-
-    # myDf1.to_csv('output_bench_press.csv', index=False, header=False)
-    # myDf2.to_csv('output_curls.csv', index=False, header=False)
-    # myDf3.to_csv('output_triceps.csv', index=False, header=False)
 
 if __name__ == '__main__':
     main()
