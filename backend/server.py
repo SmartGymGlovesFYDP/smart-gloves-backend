@@ -76,8 +76,7 @@ def updateWorkout():
             workoutHistory_ref.add({
                 "workoutName": tempWorkoutInfo[0],
                 "duration": tempWorkoutInfo[3],
-                "intensity": calcIntensity(tempWorkoutInfo[2], tempWorkoutInfo[3]),
-                "performance": calcPerformance(tempWorkoutInfo[3]),
+                "heartRateIntensity": calcIntensity(tempWorkoutInfo[2], tempWorkoutInfo[3]),
                 "majorMuscle": tempWorkoutInfo[1],
                 "timestamp": datetime.datetime.now(),
                 "predictedWorkout": "",
