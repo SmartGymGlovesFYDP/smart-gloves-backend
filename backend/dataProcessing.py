@@ -24,41 +24,62 @@ mapping = {
     2: "Tricep Extension"
 }
 
-injury = { # Compare the Right + Left Glove
-    "Ax_Right >> Ax_Left" : "Right hand motion too fast (X-Direction)",
-    "Ay_Right >> Ay_Left" : "Right hand motion too fast (Y-Direction)",
-    "Az_Right >> Az_Left" : "Right hand motion too fast (Z-Direction)",
-    "Gx_Right >> Gx_Left" : "Possible injury risk of rotational motion (X-Direction)",
-    "Gy_Right >> Gy_Left" : "Possible injury risk of rotational motion (Y-Direction)",
-    "Gz_Right >> Gz_Left" : "Possible injury risk of rotational motion (Z-Direction)",
-    "Ax_Right << Ax_Left" : "Left hand motion too fast (X-Direction)",
-    "Ay_Right << Ay_Left" : "Left hand motion too fast (Y-Direction)",
-    "Az_Right << Az_Left" : "Left hand motion too fast (Z-Direction)",
-    "Gx_Right << Gx_Left" : "Possible injury risk of rotational motion (X-Direction)",
-    "Gy_Right << Gy_Left" : "Possible injury risk of rotational motion (Y-Direction)",
-    "Gz_Right << Gz_Left" : "Possible injury risk of rotational motion (Z-Direction)",
-    "Ax_Right ~ Ax_Left" : "Great speed for both hands (X-Direction)",
-    "Ay_Right ~ Ay_Left" : "Great speed for both hands (Y-Direction)",
-    "Az_Right ~ Az_Left" : "Great speed for both hands (Z-Direction)",
-    "Gx_Right ~ Gx_Left" : "Great stability of rotational motion for both hands (X-Direction)",
-    "Gy_Right ~ Gy_Left" : "Great stability of rotational motion for both hands (Y-Direction)",
-    "Gz_Right ~ Gz_Left" : "Great stability of rotational motion for both hands (Z-Direction)"
+injury = { # Compare the Raw Data Slopes to the Error Bar of LOW-HIGH values
+    0 : "hand motion too fast in the X-Direction",                          # Ax_Raw > Ax_Proper
+    1 : "hand motion too slow in the X-Direction",                          # Ax_Raw < Ax_Proper
+    2 : "hand motion speed is perfect in the X-Direction",                  # Ax_Raw ~ Ax_Proper 
+    3 : "hand motion too fast in the Y-Direction",                          # Ay_Raw > Ay_Proper
+    4 : "hand motion too slow in the Y-Direction",                          # Ay_Raw < Ay_Proper
+    5 : "hand motion speed is perfect in the Y-Direction",                  # Ay_Raw ~ Ay_Proper
+    6 : "hand motion too fast in the Z-Direction",                          # Az_Raw > Az_Proper
+    7 : "hand motion too slow in the Z-Direction",                          # Az_Raw < Az_Proper
+    8 : "hand motion speed is perfect in the Z-Direction",                  # Az_Raw ~ Az_Proper
+    9 : "possible injury risk of rotational motion in the X-Direction",     # Gx_Raw >|< Gx_Proper
+    10: "great rotational motion stability in the X-Direction",             # Gx_Raw ~ Gx_Proper
+    11: "possible injury risk of rotational motion in the Y-Direction",     # Gy_Raw >|< Gy_Proper
+    12: "great rotational motion stability in the Y-Direction",             # Gy_Raw ~ Gy_Proper
+    13: "possible injury risk of rotational motion in the Z-Direction",     # Gz_Raw >|< Gz_Proper
+    14: "great rotational motion stability in the Z-Direction"              # Gz_Raw ~ Gz_Proper
 }
 
-properAvgBenchPressMSE = [0.011716247,	0.036809727,	0.072262675,    # Ax_Right, Ay_Right, Az_Right
-                        1366.580343,	132.7365875,	192.725278,     # Gx_Right, Gy_Right, Gz_Right
-                        0.013828273,	0.036533363,	0.039886446,    # Ax_Left, Ay_Left, Az_Left
-                        2049.702587,	162.7141079,	716.8502251]    # Gx_Left, Gy_Left, Gz_Left
+properAvgBenchPressMSE = [(0.000954270, 0.004019794), # (Ax_Right_LOW,Ax_Right_HIGH)
+                          (0.019308498, 0.029403562), # (Ay_Right_LOW,Ay_Right_HIGH)
+                          (0.014885754, 0.036409837), # (Az_Right_LOW,Az_Right_HIGH)
+                          (99.38704950, 330.4275585), # (Gx_Right_LOW,Gx_Right_HIGH)
+                          (4.121318247, 12.60476745), # (Gy_Right_LOW,Gy_Right_HIGH)
+                          (10.35889395, 22.21108908), # (Gz_Right_LOW,Gz_Right_HIGH)
+                          (0.001629672, 0.003681337), # (Ax_Left_LOW,Ax_Left_HIGH)
+                          (0.018381728, 0.028166604), # (Ay_Left_LOW,Ay_Left_HIGH)
+                          (0.026646431, 0.042366096), # (Az_Left_LOW,Az_Left_HIGH)
+                          (116.4247039, 306.5351855), # (Gx_Left_LOW,Gx_Left_HIGH)
+                          (11.44071676, 37.58922647), # (Gy_Left_LOW,Gy_Left_HIGH)
+                          (10.40063429, 25.69945336)] # (Gz_Left_LOW,Gz_Left_HIGH)
 
-properAvgBicepCurlsMSE = [0.071671827,	0.290808289,	0.196147715,    # Ax_Right, Ay_Right, Az_Right
-                        3414.610078,	3322.766288,	2681.099395,    # Gx_Right, Gy_Right, Gz_Right
-                        0.087521492,	0.244233338,	0.195569624,    # Ax_Left, Ay_Left, Az_Left
-                        1576.773251,	4018.62555,	    2932.637815]    # Gx_Left, Gy_Left, Gz_Left
+# properAvgBicepCurlsMSE = [(,), # (Ax_Right_LOW,Ax_Right_HIGH)
+#                           (,), # (Ay_Right_LOW,Ay_Right_HIGH)
+#                           (,), # (Az_Right_LOW,Az_Right_HIGH)
+#                           (,), # (Gx_Right_LOW,Gx_Right_HIGH)
+#                           (,), # (Gy_Right_LOW,Gy_Right_HIGH)
+#                           (,), # (Gz_Right_LOW,Gz_Right_HIGH)
+#                           (,), # (Ax_Left_LOW,Ax_Left_HIGH)
+#                           (,), # (Ay_Left_LOW,Ay_Left_HIGH)
+#                           (,), # (Az_Left_LOW,Az_Left_HIGH)
+#                           (,), # (Gx_Left_LOW,Gx_Left_HIGH)
+#                           (,), # (Gy_Left_LOW,Gy_Left_HIGH)
+#                           (,)] # (Gz_Left_LOW,Gz_Left_HIGH)
 
-properAvgTricepsMSE =   [0.13109381,	0.081085661,	0.0358325,      # Ax_Right, Ay_Right, Az_Right
-                        659.4008787,	544.9047889,	1557.480128,    # Gx_Right, Gy_Right, Gz_Right
-                        0.051912554,	0.056446856,	0.024493676,    # Ax_Left, Ay_Left, Az_Left
-                        200.6815757,	226.2440168,	924.9710044]    # Gx_Left, Gy_Left, Gz_Left
+# properAvgTricepsMSE =    [(,), # (Ax_Right_LOW,Ax_Right_HIGH)
+#                           (,), # (Ay_Right_LOW,Ay_Right_HIGH)
+#                           (,), # (Az_Right_LOW,Az_Right_HIGH)
+#                           (,), # (Gx_Right_LOW,Gx_Right_HIGH)
+#                           (,), # (Gy_Right_LOW,Gy_Right_HIGH)
+#                           (,), # (Gz_Right_LOW,Gz_Right_HIGH)
+#                           (,), # (Ax_Left_LOW,Ax_Left_HIGH)
+#                           (,), # (Ay_Left_LOW,Ay_Left_HIGH)
+#                           (,), # (Az_Left_LOW,Az_Left_HIGH)
+#                           (,), # (Gx_Left_LOW,Gx_Left_HIGH)
+#                           (,), # (Gy_Left_LOW,Gy_Left_HIGH)
+#                           (,)] # (Gz_Left_LOW,Gz_Left_HIGH)
 
 def readJSON(filename):
     f = open(filename)
@@ -198,32 +219,164 @@ def generateSlopes(workoutData, workoutName):
     
     return tempSlopes
 
+def evaluateForm(raw, proper):
+    overallScore, rightHandScore, leftHandScore, stars = 0, 0, 0, 0
+    score = []
+    tips = []
+
+    for i in range(len(raw)):
+        if i == 0: # RIGHT_AX
+            if raw[i] > proper[i][1]: # RAW Greater than PROPER HIGH
+                score.append(0)
+                tips.append("Right " + injury[0])
+            elif raw[i] < proper[i][0]: # RAW Less than PROPER LOW
+                score.append(1)
+                tips.append("Right " + injury[1])
+            else:
+                score.append(2)
+                # tips.append("Right " + injury[2])
+        elif i == 1: # RIGHT_AY
+            if raw[i] > proper[i][1]: # RAW Greater than PROPER HIGH
+                score.append(0)
+                tips.append("Right " + injury[3])
+            elif raw[i] < proper[i][0]: # RAW Less than PROPER LOW
+                score.append(1)
+                tips.append("Right " + injury[4])
+            else:
+                score.append(2)
+                # tips.append("Right " + injury[5])
+        elif i == 2: # RIGHT_AZ
+            if raw[i] > proper[i][1]: # RAW Greater than PROPER HIGH
+                score.append(0)
+                tips.append("Right " + injury[6])
+            elif raw[i] < proper[i][0]: # RAW Less than PROPER LOW
+                score.append(1)
+                tips.append("Right " + injury[7])
+            else:
+                score.append(2)
+                # tips.append("Right " + injury[8])
+        elif i == 3: # RIGHT_GX
+            if raw[i] > proper[i][1] or raw[i] < proper[i][0] : # RAW Greater/Less than PROPER HIGH
+                score.append(0)
+                tips.append("Right hand has " + injury[9])
+            else:
+                score.append(2)
+                # tips.append("Right hand has " + injury[10])
+        elif i == 4: # RIGHT_GY
+            if raw[i] > proper[i][1] or raw[i] < proper[i][0] : # RAW Greater/Less than PROPER HIGH
+                score.append(0)
+                tips.append("Right hand has " + injury[11])
+            else:
+                score.append(2)
+                # tips.append("Right hand has " + injury[12])
+        elif i == 5: # RIGHT_GZ
+            if raw[i] > proper[i][1] or raw[i] < proper[i][0] : # RAW Greater/Less than PROPER HIGH
+                score.append(0)
+                tips.append("Right hand has " + injury[13])
+            else:
+                score.append(2)
+                # tips.append("Right hand has " + injury[14])
+        elif i == 6: # LEFT_AX
+            if raw[i] > proper[i][1]: # RAW Greater than PROPER HIGH
+                score.append(0)
+                tips.append("Left " + injury[0])
+            elif raw[i] < proper[i][0]: # RAW Less than PROPER LOW
+                score.append(1)
+                tips.append("Left " + injury[1])
+            else:
+                score.append(2)
+                # tips.append("Left " + injury[2])
+        elif i == 7: # LEFT_AY
+            if raw[i] > proper[i][1]: # RAW Greater than PROPER HIGH
+                score.append(0)
+                tips.append("Left " + injury[3])
+            elif raw[i] < proper[i][0]: # RAW Less than PROPER LOW
+                score.append(1)
+                tips.append("Left " + injury[4])
+            else:
+                score.append(2)
+                # tips.append("Left " + injury[5])
+        elif i == 8: # LEFT_AZ
+            if raw[i] > proper[i][1]: # RAW Greater than PROPER HIGH
+                score.append(0)
+                tips.append("Left " + injury[6])
+            elif raw[i] < proper[i][0]: # RAW Less than PROPER LOW
+                score.append(1)
+                tips.append("Left " + injury[7])
+            else:
+                score.append(2)
+                # tips.append("Left " + injury[8])
+        elif i == 9: # LEFT_GX
+            if raw[i] > proper[i][1] or raw[i] < proper[i][0] : # RAW Greater/Less than PROPER HIGH
+                score.append(0)
+                tips.append("Left hand has " + injury[9])
+            else:
+                score.append(2)
+                # tips.append("Left hand has " + injury[10])
+        elif i == 10: # LEFT_GY
+            if raw[i] > proper[i][1] or raw[i] < proper[i][0] : # RAW Greater/Less than PROPER HIGH
+                score.append(0)
+                tips.append("Left hand has " + injury[11])
+            else:
+                score.append(2)
+                # tips.append("Left hand has " + injury[12])
+        elif i == 11: # LEFT_GZ
+            if raw[i] > proper[i][1] or raw[i] < proper[i][0] : # RAW Greater/Less than PROPER HIGH
+                score.append(0)
+                tips.append("Left hand has " + injury[13])
+            else:
+                score.append(2)
+                # tips.append("Left hand has " + injury[14])
+
+    for i in range(len(raw)):
+        overallScore += score[i]
+        if i <= 5:
+            rightHandScore += score[i]
+        else:
+            leftHandScore += score[i]
+
+    overallScore = (overallScore/24)*100     # Metric 1 = Overall Workout + Stars
+    rightHandScore = (rightHandScore/12)*100 # Metric 2 = Wellness of Right Hand
+    leftHandScore = (leftHandScore/12)*100   # Metric 3 = Wellness of Left Hand
+    if overallScore >= 90:
+        stars = 5
+    elif overallScore >= 75:
+        stars = 4
+    elif overallScore >= 60:
+        stars = 3
+    elif overallScore >= 50:
+        stars = 2
+    elif overallScore >= 40:
+        stars = 1
+    else:
+        stars = 0
+
+    ratings = []
+    ratings.append(overallScore)
+    ratings.append(rightHandScore)
+    ratings.append(leftHandScore)
+    ratings.append(stars)
+
+    return ratings, tips
+
 ######      THIS IS TO GIVE A RATING OF THE WORKOUT
-# [DONE] 1) User trains with proper form (used 4 reference points for each workout)
+# [DONE] 1) User trains with proper form (used 5 reference points for each workout)
 # [DONE] 2.1) Using linear regression, a slope formed for the trained data => Fix this to a slope + y-intercept to compare it later
 # [DONE] 2.2) Mean Squared Error is calculated from the slope and the actual data => Fix this to a number to compare it later
 # [DONE] 2.3) Averaged the MSE from the workout of proper form to be used for comparison
 # [DONE] 3.1) With trial data, use linear regression to get a slope for the trial data
 # [DONE] 3.2) Calculate Mean Squared Error from the slope and scattered points
-# [] 3.3) Find the differences in each direction and give a rating and injury risk in each direction
-# [] 4) Compare the Mean Squared Error (Expected vs Actual) find the percentage difference and evaluate the workout
+# [DONE] 3.3) Find the differences in each direction and give a rating and injury risk in each direction
 def rateWorkout(allSlopes, workout):
-    diffInWorkout = []
-    rating = 0
-
     if workout == "Bench Press":
-        for i in range(len(allSlopes)):
-            diffInWorkout.append(percentageDifference(allSlopes[i], properAvgBenchPressMSE[i]))
+        ratings, tips = evaluateForm(allSlopes, properAvgBenchPressMSE)
     elif workout == "Bicep Curls":
-        for i in range(len(allSlopes)):
-            diffInWorkout.append(percentageDifference(allSlopes[i], properAvgBicepCurlsMSE[i]))
+        ratings, tips = evaluateForm(allSlopes, properAvgBicepCurlsMSE)
     elif workout == "Triceps Extension":
-        for i in range(len(allSlopes)):
-            diffInWorkout.append(percentageDifference(allSlopes[i], properAvgTricepsMSE[i]))
+        ratings, tips = evaluateForm(allSlopes, properAvgTricepsMSE)
     else:
         return "Invalid Input!"
-
-    return diffInWorkout
+    return ratings, tips
 
 def predictWorkout(slopes_X_test):
     # Import dataset:
@@ -261,15 +414,15 @@ def predictWorkout(slopes_X_test):
     # print(mapping[int(slopes_y_test)])
 
     return int(slopes_y_test)
-        
-def main():
 
+#TODO:TEST PROPER        
+def main():
     # # To hold all the slopes for a certain exercise
     # allSlopes = []
 
     workoutData = []
-    workout = getGloveData() # (UN)COMMENT THIS TO TEST FIREBASE REALTIMEDB
-    # workout = readJSON("workout.json") # (UN)COMMENT THIS TO TEST LOCAL JSON FILES
+    # workout = getGloveData() # (UN)COMMENT THIS TO TEST FIREBASE REALTIMEDB
+    workout = readJSON("workout1.json") # (UN)COMMENT THIS TO TEST LOCAL JSON FILES
     workoutData.append(workout)
 
     allSlopes = generateSlopes(workoutData, "Workout")
@@ -280,10 +433,12 @@ def main():
     # 1 = Bicep Curls   = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
     # 2 = Triceps       = [[0.161019347,0.106992285,0.047709297,442.3707667,724.1853624,1984.234125,0.033414772,0.076311812,0.028354947,221.5938891,245.4956944,1074.739071]]
     guessWorkout = predictWorkout(allSlopes)
-    print(mapping[guessWorkout])
+    predictedWorkout = mapping[guessWorkout]
+    print(predictedWorkout)
 
-    # workoutRating = rateWorkout(allSlopes[0], guessWorkout)
-    # print(workoutRating)
+    workoutRating, tips = rateWorkout(allSlopes[0], predictedWorkout)
+    print(workoutRating)
+    print(tips)
 
     # myDf = pd.DataFrame(workoutData)
     # myDf.to_csv('output_workout.csv', index=False, header=False)
@@ -339,53 +494,7 @@ Functional
 
 [SHAHIL]
 1) Display analyzed smart gym glove sensor data for at least 3 distinct gym activities with 2 or more metrics
-* [Back-End] 
-
-    - Bench Press
-        Ax_Right = 
-        Ay_Right = 
-        Az_Right = 
-        Gx_Right = 
-        Gy_Right = 
-        Gz_Right = 
-
-        Ax_Left = 
-        Ay_Left = 
-        Az_Left = 
-        Gx_Left = 
-        Gy_Left = 
-        Gz_Left = 
-
-    - Bicep Curl
-        Ax_Right = 
-        Ay_Right = 
-        Az_Right = 
-        Gx_Right = 
-        Gy_Right = 
-        Gz_Right = 
-
-        Ax_Left = 
-        Ay_Left = 
-        Az_Left = 
-        Gx_Left = 
-        Gy_Left = 
-        Gz_Left = 
-
-    - Tricep Overhead Extension
-        Ax_Right = 
-        Ay_Right = 
-        Az_Right = 
-        Gx_Right = 
-        Gy_Right = 
-        Gz_Right = 
-
-        Ax_Left = 
-        Ay_Left = 
-        Az_Left = 
-        Gx_Left = 
-        Gy_Left = 
-        Gz_Left = 
-
+* [Back-End] Perform analysis on the workout
 * [Front-End] Being able to extract workout history from the backend and show the results in the frontend.
 * [Test] Are we able to view the results in the mobile app?
 
