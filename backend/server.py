@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app, db
 from enum import Enum
+from dataProcessing import dataProcess
 import time
 
 app = Flask(__name__)
@@ -78,7 +79,13 @@ def updateWorkout():
                 "intensity": calcIntensity(tempWorkoutInfo[2], tempWorkoutInfo[3]),
                 "performance": calcPerformance(tempWorkoutInfo[3]),
                 "majorMuscle": tempWorkoutInfo[1],
-                "timestamp": datetime.datetime.now()
+                "timestamp": datetime.datetime.now(),
+                "predictedWorkout": "",
+                "overallScore": 0,
+                "rightHandScore": 0,
+                "leftHandScore": 0,
+                "stars": 0,
+                "tips": []
             })
             # clear the documents in the newWorkout_ref so only a single document exists at a time
             for doc in newWorkout_ref.stream():
@@ -89,6 +96,12 @@ def updateWorkout():
     except Exception as e:
         return f"An error occurred when updateing workout summary: {e}"
 
+def addProcessedWorkout(workoutResults):
+    lastWorkout = workoutHistory_ref.order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1).get()
+    lastWorkoutTimestamp = lastWorkout[0].to_dict()['timestamp']
+    # print(lastWorkout[0].to_dict())
+    # print(lastWorkout[0].to_dict()['timestamp'])
+    workoutHistory_ref.document(lastWorkout[0].id).update(workoutResults)
 
 # Define Middleware below
 
@@ -113,7 +126,6 @@ def calcIntensity(workoutDifficulty, workoutMinutes):
     except Exception as e:
         return f"An error occurred while calculating intensity: {e}"
 
-
 # TODO: modification needed based on how heartRate data will be sent
 def calcIntensityHeartRate(heartRate):
     # calculation with heart rate
@@ -132,7 +144,6 @@ def calcIntensityHeartRate(heartRate):
         userIntensityArray.append(Intensity.MAXED)
     return {"userIntensity": userIntensityArray}
 
-
 def getGloveData():
     # Polling RealTime database
     # loop picks a value in RT db waits if the newest value is not changed then exit, else continue the loop
@@ -147,7 +158,12 @@ def getGloveData():
     # dataStream = realtimedata_ref.listen(listenHandler)
 
     data = realtimedata_ref.get()
-    return data
+    print("Data = ", data)
+    workoutResults = dataProcess(data)
+
+    if workoutResults != 0:
+        addProcessedWorkout(workoutResults)
+        realtimedata_ref.delete()
 
 
 def getLatestTimestamp():
@@ -174,4 +190,18 @@ def calcPerformance(workoutMinutes):
 
 
 if __name__ == "__main__":
+    # addProcessedWorkout({
+    #     "predictedWorkout": "Bicep Curl",
+    #     "overallScore": 1,
+    #     "rightHandScore": 2,
+    #     "leftHandScore": 3,
+    #     "stars": 4,
+    #     "tips": ["Hey", "Hello"]
+    # })
+    
+    print("Before run")
     app.run(debug=True, host='localhost', port='8000')
+    print("After run")
+
+    # while True:
+    #     getGloveData()

@@ -6,7 +6,6 @@ import pandas as pd
 from fastdtw import fastdtw
 from scipy.signal import butter,filtfilt
 from scipy.spatial.distance import euclidean
-from server import getGloveData
 
 # Import libraries and classes required for this example:
 from sklearn.model_selection import train_test_split
@@ -340,17 +339,25 @@ def evaluateForm(raw, proper):
     rightHandScore = (rightHandScore/12)*100 # Metric 2 = Wellness of Right Hand
     leftHandScore = (leftHandScore/12)*100   # Metric 3 = Wellness of Left Hand
     if overallScore >= 90:
-        stars = 5
-    elif overallScore >= 75:
-        stars = 4
+        stars = 5.0
+    elif overallScore >= 80:
+        stars = 4.5
+    elif overallScore >= 70:
+        stars = 4.0
     elif overallScore >= 60:
-        stars = 3
+        stars = 3.5
     elif overallScore >= 50:
-        stars = 2
+        stars = 3.0
     elif overallScore >= 40:
-        stars = 1
+        stars = 2.5
+    elif overallScore >= 30:
+        stars = 2.0
+    elif overallScore >= 20:
+        stars = 1.5
+    elif overallScore >= 10:
+        stars = 1.0
     else:
-        stars = 0
+        stars = 0.0
 
     ratings = []
     ratings.append(overallScore)
@@ -463,42 +470,47 @@ def testML():
     print("TEST 9: Tricep Extension: ", "Tricep Extension" == mapping[predictWorkout([allTricepSlopes[1]])] ) 
     print("TEST 10: Tricep Extension: ", "Tricep Extension" == mapping[predictWorkout([allTricepSlopes[2]])] ) 
      
-def main():
+def dataProcess(workout):
     
-    # testML()
+    if workout:
 
-    # # To hold all the slopes for a certain exercise
-    # allSlopes = []
+        # testML()
 
-    # workoutData = []
-    # workout = getGloveData() # (UN)COMMENT THIS TO TEST FIREBASE REALTIMEDB
-    # workout = readJSON("workout1.json") # (UN)COMMENT THIS TO TEST LOCAL JSON FILES
-    # workoutData.append(workout)
+        # To hold all the slopes for a certain exercise
+        allSlopes = []
 
-    # allSlopes = generateSlopes(workoutData, "Workout")
-    # Sample test slopes to see what it returns
-    # allSlopes = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
-    # print (allSlopes)
-    # 0 = Bench Press   = [[0.022603186,0.00243637,0.02918603,5.339126702,107.8320342,7.000924645,0.028759372,0.008630163,0.02132904,22.92064783,99.48017482,3.45258442]]
-    # 1 = Bicep Curls   = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
-    # 2 = Triceps       = [[0.161019347,0.106992285,0.047709297,442.3707667,724.1853624,1984.234125,0.033414772,0.076311812,0.028354947,221.5938891,245.4956944,1074.739071]]
-    # guessWorkout = predictWorkout(allSlopes)
-    # predictedWorkout = mapping[guessWorkout]
-    # print(predictedWorkout)
+        workoutData = []
+        # workout = getGloveData() # (UN)COMMENT THIS TO TEST FIREBASE REALTIMEDB
+        # workout = readJSON("workout1.json") # (UN)COMMENT THIS TO TEST LOCAL JSON FILES
+        workoutData.append(workout)
 
-    # workoutRating, tips = rateWorkout(allSlopes[0], predictedWorkout)
-    # print(workoutRating)
-    # print(tips)
+        allSlopes = generateSlopes(workoutData, "Workout")
+        # Sample test slopes to see what it returns
+        # allSlopes = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
+        # print (allSlopes)
+        # 0 = Bench Press   = [[0.022603186,0.00243637,0.02918603,5.339126702,107.8320342,7.000924645,0.028759372,0.008630163,0.02132904,22.92064783,99.48017482,3.45258442]]
+        # 1 = Bicep Curls   = [[0.071438754,0.289096595,0.210599216,2384.568664,2488.04925,1789.299704,0.097597208,0.295178053,0.200608988,1333.62713,2985.354642,2148.434388]]
+        # 2 = Triceps       = [[0.161019347,0.106992285,0.047709297,442.3707667,724.1853624,1984.234125,0.033414772,0.076311812,0.028354947,221.5938891,245.4956944,1074.739071]]
+        guessWorkout = predictWorkout(allSlopes)
+        predictedWorkout = mapping[guessWorkout]
+        # print(predictedWorkout)
 
-    # myDf = pd.DataFrame(workoutData)
-    # myDf.to_csv('output_workout.csv', index=False, header=False)
+        workoutRating, tips = rateWorkout(allSlopes[0], predictedWorkout)
+        # print(workoutRating)
+        # print(tips)
 
+        workoutResults = {
+            "predictedWorkout": predictedWorkout,
+            "overallScore": workoutRating[0],
+            "rightHandScore": workoutRating[1],
+            "leftHandScore": workoutRating[2],
+            "stars": workoutRating[3],
+            "tips": tips
+        }
 
+        return workoutResults
 
-
-
-if __name__ == '__main__':
-    main()
+    return 0
 
 '''
 TO-DOs:
