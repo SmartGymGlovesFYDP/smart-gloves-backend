@@ -153,8 +153,9 @@ def getGloveData():
 def getLatestTimestamp():
     curr_data = realtimedata_ref.get()
     last_timestamp = 0
-    for key, val in curr_data.items():
-        last_timestamp = key
+    if curr_data:
+        for key, val in curr_data.items():
+            last_timestamp = key
     #print("last_timestamp: ", last_timestamp)
     return last_timestamp
 
