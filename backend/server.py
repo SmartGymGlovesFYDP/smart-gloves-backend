@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app, db
 from enum import Enum
 from dataProcessing import dataProcess
+from datetime import datetime
 import time
 
 app = Flask(__name__)
@@ -19,8 +20,7 @@ realtimedata_ref = db.reference(
 # Specific Document + Collection to extract the user's workout
 specificUser = 'XJGnJ3aJ3zUWcUAgtQOsie8oM9Y2'
 newWorkout_ref = users_ref.document(specificUser).collection('newWorkout')
-workoutHistory_ref = users_ref.document(
-    specificUser).collection('workoutHistory')
+workoutHistory_ref = users_ref.document(specificUser).collection('workoutHistory')
 
 # Define Routes below
 
@@ -67,18 +67,18 @@ def detectWorkout():
         return f"An error occurred when determining temp workout: {e}"
 
 
-@app.route("/updateWorkout", methods=['GET'])
+# @app.route("/updateWorkout", methods=['GET'])
 def updateWorkout():
     try:
         tempWorkoutInfo = detectWorkout()
         if tempWorkoutInfo[0] != "A":
             # update the workout history
+            # "heartRateIntensity": calcIntensity(tempWorkoutInfo[2], tempWorkoutInfo[3]),
             workoutHistory_ref.add({
                 "workoutName": tempWorkoutInfo[0],
                 "duration": tempWorkoutInfo[3],
-                "heartRateIntensity": calcIntensity(tempWorkoutInfo[2], tempWorkoutInfo[3]),
                 "majorMuscle": tempWorkoutInfo[1],
-                "timestamp": datetime.datetime.now(),
+                "timestamp": datetime.now(),
                 "predictedWorkout": "",
                 "overallScore": 0,
                 "rightHandScore": 0,

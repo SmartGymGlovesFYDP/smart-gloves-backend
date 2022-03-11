@@ -21,7 +21,7 @@ TESTML = "./TestML/"
 mapping = {
     0: "Bench Press",
     1: "Bicep Curls",
-    2: "Tricep Extension"
+    2: "Triceps Extension"
 }
 
 injury = { # Compare the Raw Data Slopes to the Error Bar of LOW-HIGH values
@@ -335,9 +335,9 @@ def evaluateForm(raw, proper):
         else:
             leftHandScore += score[i]
 
-    overallScore = (overallScore/24)*100     # Metric 1 = Overall Workout + Stars
-    rightHandScore = (rightHandScore/12)*100 # Metric 2 = Wellness of Right Hand
-    leftHandScore = (leftHandScore/12)*100   # Metric 3 = Wellness of Left Hand
+    overallScore = round(((overallScore/24)*100), 2)   # Metric 1 = Overall Workout + Stars
+    rightHandScore = round((rightHandScore/12)*100, 2) # Metric 2 = Wellness of Right Hand
+    leftHandScore = round((leftHandScore/12)*100, 2)   # Metric 3 = Wellness of Left Hand
     if overallScore >= 90:
         stars = 5.0
     elif overallScore >= 80:
