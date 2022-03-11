@@ -466,9 +466,9 @@ def testML():
     print("TEST 5: Bicep Curls: ", "Bicep Curls" == mapping[predictWorkout([allCurlsSlopes[1]])] )
     print("TEST 6: Bicep Curls: ", "Bicep Curls" == mapping[predictWorkout([allCurlsSlopes[2]])] )
     print("TEST 7: Bicep Curls: ", "Bicep Curls" == mapping[predictWorkout([allCurlsSlopes[3]])] ) 
-    print("TEST 8: Tricep Extension: ", "Tricep Extension" == mapping[predictWorkout([allTricepSlopes[0]])] ) 
-    print("TEST 9: Tricep Extension: ", "Tricep Extension" == mapping[predictWorkout([allTricepSlopes[1]])] ) 
-    print("TEST 10: Tricep Extension: ", "Tricep Extension" == mapping[predictWorkout([allTricepSlopes[2]])] ) 
+    print("TEST 8: Tricep Extension: ", "Triceps Extension" == mapping[predictWorkout([allTricepSlopes[0]])] ) 
+    print("TEST 9: Tricep Extension: ", "Triceps Extension" == mapping[predictWorkout([allTricepSlopes[1]])] ) 
+    print("TEST 10: Tricep Extension: ", "Triceps Extension" == mapping[predictWorkout([allTricepSlopes[2]])] ) 
      
 def dataProcess(workout):
     
